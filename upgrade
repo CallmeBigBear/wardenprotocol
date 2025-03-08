@@ -1,5 +1,5 @@
 #!/bin/bash
-# AUTO UPGRADE BY BBear
+# WARDEN UPGRADE BY BBear
 if [[ $# -lt 1 ]]; then
     echo "ERROR: Enter new version | e.g. 14"
     exit
@@ -26,7 +26,6 @@ else
     echo "INSTALLING jq..."
     apt update && apt install jq -y
 fi
-
 wget -O wardend $BINARY_LINK > /dev/null
   chmod +x wardend
   echo -e "${YELLOW}\n############################################\nLOCATION FOUND: $BINARY_LOCATION \n\nOLD VERSION:"
@@ -36,16 +35,12 @@ wget -O wardend $BINARY_LINK > /dev/null
   echo -e "############################################\n ${NC}"
   echo "Waiting 15s..."
   sleep 15
-  if [ ! -z "$2" ]; then
-    echo -e "${YELLOW}HEIGHT TO UPGRADE: $DEST_HEIGHT ${NC}"
-    while :
-    do
-      CURRENT_HEIGHT=$(curl -s localhost:$RPC_PORT/status | jq -r .result.sync_info.latest_block_height)
-      [[ $CURRENT_HEIGHT == $DEST_HEIGHT ]] && mv wardend $BINARY_LOCATION && systemctl restart wardend && echo "UPGRADE SUCCESSFULLY!!!" && break
-      echo Block left: $((DEST_HEIGHT - CURRENT_HEIGHT))
-      sleep 15
-    done
-  else
-    mv wardend $BINARY_LOCATION && systemctl restart wardend && echo "UPGRADE SUCCESSFULLY!!!"
-  fi
-fi
+echo -e "${YELLOW}HEIGHT TO UPGRADE: $DEST_HEIGHT ${NC}"
+while :
+do
+    CURRENT_HEIGHT=$(curl -s localhost:$RPC_PORT/status | jq -r .result.sync_info.latest_block_height)
+    [[ $CURRENT_HEIGHT == $DEST_HEIGHT ]] && mv wardend $BINARY_LOCATION && systemctl restart wardend && break
+    echo Block left: $((DEST_HEIGHT - CURRENT_HEIGHT))
+    sleep 15
+done
+echo "UPGRADE SUCCESSFULLY!!!"
